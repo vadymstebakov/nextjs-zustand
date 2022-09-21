@@ -1,14 +1,15 @@
 import { memo } from 'react';
-import { usePokemonStore, PokemonType } from '../../store/usePokemonStore';
+import { PokemonType } from '../../types';
+import { usePokemonsStore } from '../../store/usePokemonsStore';
 import Card from '../Card';
 
 const Cards = ({ list }: { list: PokemonType[] }) => {
-  const { filteredPokemon, setPokemon } = usePokemonStore();
+  const { filteredPokemons, setPokemons } = usePokemonsStore();
 
-  if (filteredPokemon) {
+  if (filteredPokemons) {
     return (
       <>
-        {filteredPokemon.map((item) => (
+        {filteredPokemons.map((item) => (
           <Card key={item.id} id={item.id} name={item.name} image={item.image} />
         ))}
       </>

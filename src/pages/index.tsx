@@ -1,22 +1,23 @@
 import React, { useEffect, useState, useTransition } from 'react';
-import { usePokemonStore, PokemonType } from '../store/usePokemonStore';
+import { PokemonType } from '../types';
+import { usePokemonsStore } from '../store/usePokemonsStore';
 import Cards from '../components/Cards';
 import styles from '../styles/Home.module.css';
 
 export const getServerSideProps = async () => {
-  await usePokemonStore.getState().fetchPokemon();
+  await usePokemonsStore.getState().fetchPokemons();
 
   return {
     props: {
-      pokemon: usePokemonStore.getState().pokemon,
+      pokemons: usePokemonsStore.getState().pokemons,
     },
   };
 };
 
-const Home = ({ pokemon }: { pokemon: PokemonType[] }) => {
+const Home = ({ pokemons }: { pokemons: PokemonType[] }) => {
   const [isLoading, startTransition] = useTransition();
   const [localValueFilter, setLocalValueFilter] = useState<string>('');
-  const { setFilter, setPokemon } = usePokemonStore();
+  const { setFilter, setPokemons, removePokemons } = usePokemonsStore();
 
   const changeHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
     setLocalValueFilter(e.target.value);
@@ -26,15 +27,19 @@ const Home = ({ pokemon }: { pokemon: PokemonType[] }) => {
   };
 
   useEffect(() => {
-    setPokemon(pokemon);
-  }, [pokemon, setPokemon]);
+    setPokemons(pokemons);
+
+    return () => {
+      removePokemons();
+    };
+  }, [pokemons, setPokemons, removePokemons]);
 
   return (
     <div className={styles.main}>
       <div>
         <input type="text" value={localValueFilter} onChange={changeHandler} className={styles.search} />
       </div>
-      <div className={styles.container}>{isLoading ? <p>Loading...</p> : <Cards list={pokemon} />}</div>
+      <div className={styles.container}>{isLoading ? <p>Loading...</p> : <Cards list={pokemons} />}</div>
     </div>
   );
 };
